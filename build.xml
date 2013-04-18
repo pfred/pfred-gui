@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="PFRED" default="jar" basedir=".">
+    <description>Builds, tests, and runs the project PFRED Gui</description>
+    <target name="init">
+        <tstamp/>
+        <!--  Give user a chance to override without editing this file  and without using -D arguments each time they build using build.properties files).  -->
+        <property file="${basedir}/build.properties" />
+
+        <property name="name" value="PFRED"/>
+        <property name="version" value="1.0"/>
+        <property name="compile.debug"       value="true" />
+        <property name="compile.optimize"    value="true" />
+        <property name="compile.target"      value="1.6" />
+        <property name="compile.source"      value="1.6" />
+        <property name="compile.deprecation" value="true" />
+        <property name="src.dir" value="${basedir}/src"/>
+        <property name="lib.dir" value="${basedir}/lib"/>
+        <property name="build.dir" value="${basedir}/build"/>
+        <property name="build.src" value="${basedir}/build/src"/>
+        <property name="build.dest" value="${basedir}/build/classes"/>
+        <property name="dist.dir" value="${basedir}/dist"/>
+        <property name="dist.lib.dir" value="${dist.dir}/lib"/>
+        
+        <property name="jar.file.name" value="${name}-${version}.jar"/>
+        <property name="jar.file" value="${dist.dir}/${jar.file.name}"/>
+        
+        <property name="marvin.lib.dir" value="${basedir}/local/lib"/>
+        <property name="marvin.jar.name" value="MarvinBeans-5.0.jar"/>
+
+        <!-- Compilation class path, include every jar file in lib.dir -->
+        <path id="compile.class.path">
+            <fileset dir="${lib.dir}">
+                <!-- 1 core jars -->
+                <include name="commons-lang-2.0.jar"/>
+                <include name="commons-primitives-1.0.jar"/>
+                <include name="jakarta-oro-2.0.jar"/>
+                <include name="Jama.jar"/>
+                <include name="jbcl.jar"/>
+                <include name="looks-1.3.1.jar"/>
+                <include name="rtc.jar"/>
+
+                <!-- 2 pme jars -->
+                <include name="pme/aloe.jar"/>
+                <include name="pme/commons-codec-1.3.jar"/>
+                <include name="pme/commons-discovery-0.2.jar"/>
+                <include name="pme/forms-1.1.0.jar"/>
+                <include name="pme/jdom-1.1.jar"/>
+                <include name="pme/log4j-1.2.15.jar"/>
+                <include name="pme/MiscUtil-1.0.jar"/>
+                <include name="pme/NotationToolkit-3.2.jar"/>
+                <include name="pme/obf_PME-2.8_graphml.jar"/>
+                <include name="pme/obf_PME-2.8.jar"/>
+                <include name="pme/obf_PME-2.8_yexport.jar"/>
+                <include name="pme/obf_PME-2.8_yfiles-2.6.0.1.jar"/>
+                <include name="pme/saaj.jar"/>
+                <include name="pme/sdlib.jar"/>
+                <include name="pme/stax-api-1.0.1.jar"/>
+                <include name="pme/swing-layout-1.0.3.jar"/>
+                <include name="pme/swing-worker-1.1.jar"/>
+                <include name="pme/swingx-0.9.4.jar"/>
+                <include name="pme/swingx-beaninfo-0.9.4.jar"/>
+                <include name="pme/wsdl4j.jar"/>
+                <include name="pme/xbean-2.2.0.jar"/>
+                <include name="pme/xerces.jar"/>
+
+                <!-- 3 PFREDAxisClient jars -->
+                <include name="PFREDAxisClient/axis1.4.2.jar"/>
+                <include name="PFREDAxisClient/commons-httpclient-3.0.1.jar"/>
+                <include name="PFREDAxisClient/commons-logging-1.0.4.jar"/>
+                <include name="PFREDAxisClient/jaxrpc-api.jar"/>
+                <include name="PFREDAxisClient/jaxrpc-impl.jar"/>
+                <include name="PFREDAxisClient/PFREDAxisClient-1.0.jar"/>
+                <include name="PFREDAxisClient/saaj-api-1.3.jar"/>
+                <include name="PFREDAxisClient/saaj-impl-1.3.jar"/>
+                <include name="PFREDAxisClient/wsdl4j-1.6.1.jar"/>
+
+                <!-- 4 jfreechar jars -->
+                <include name="jfreechart/jcommon-1.0.16.jar"/>
+                <include name="jfreechart/jfreechart-1.0.13.jar"/>
+
+            </fileset>
+        </path>
+
+        <!-- Run class path, include everything from compile.class.path and compiled classes -->
+        <path id="run.class.path">
+            <path refid="compile.class.path"/>
+            <path location="${jar.file}"/>
+            <fileset dir="${marvin.lib.dir}">
+                <include name="${marvin.jar.name}"/>
+            </fileset>                          
+        </path>
+
+        <echo message="----------- ${name} ${version} initialized------------"/>
+    </target>
+
+    <!-- Clean build and dist folder -->
+    <target name="clean" depends="init"  description="Removes all build and dist files">
+        <delete dir="${dist.dir}"/>
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <!-- Prepares the build directory  -->
+    <target name="prepare" depends="clean">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.src}"/>
+        <mkdir dir="${build.dest}"/>
+
+        <!-- copy src files -->
+        <copy todir="${build.src}" >
+            <fileset dir="${src.dir}"/>
+        </copy>
+    </target>
+
+
+    <!-- Compiles the source directory  -->
+    <target name="compile" depends="prepare"  description="Compiles the source code">
+        <javac srcdir="${build.src}"
+               destdir="${build.dest}"
+               debug="${compile.debug}"
+               optimize="${compile.optimize}"
+               target="${compile.target}"
+               source="${compile.source}"
+               deprecation="${compile.deprecation}">
+            <classpath refid="compile.class.path"/>
+        </javac>
+    </target>
+
+    <!-- Creates the project jar -->
+    <target name="jar" depends="compile" description="Creates project jar, include properties and image files">
+        <mkdir dir = "${dist.dir}" />
+        <copy todir="${build.dest}">
+            <fileset dir="${build.src}">
+                <exclude name="**/*.java"/>
+                <exclude name="**/*.form"/>
+            </fileset>
+        </copy>
+        <jar jarfile="${jar.file}"   basedir="${build.dest}" />
+    </target>
+    
+    
+    <!-- Run application -->    
+    <target name="run" depends="jar" description="Run PFRED">
+        <java classname="org.pfred.PFREDView" fork="yes">
+            <classpath refid="run.class.path"/>          
+        </java>
+    </target>
+
+</project>
