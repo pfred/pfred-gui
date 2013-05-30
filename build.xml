@@ -24,7 +24,7 @@
         <property name="jar.file.name" value="${name}-${version}.jar"/>
         <property name="jar.file" value="${dist.dir}/${jar.file.name}"/>
         
-        <property name="marvin.lib.dir" value="${basedir}/local/lib"/>
+        <property name="marvin.lib.dir" value="${lib.dir}/pme"/>
         <property name="marvin.jar.name" value="MarvinBeans-5.0.jar"/>
 
         <!-- Compilation class path, include every jar file in lib.dir -->
