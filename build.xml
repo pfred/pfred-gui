@@ -134,7 +134,14 @@
                 <exclude name="**/*.form"/>
             </fileset>
         </copy>
-        <jar jarfile="${jar.file}"   basedir="${build.dest}" />
+        <jar jarfile="${jar.file}"   basedir="${build.dest}">
+            <manifest> 
+                <attribute name="Permissions" value="all-permissions"/>
+                <attribute name="Codebase" value="pfred.github.io"/>
+                <attribute name="Application-Name" value="PFRED"/>
+                <attribute name="Trusted-Library" value="true"/> 
+            </manifest> 
+        </jar>
     </target>
     
     
