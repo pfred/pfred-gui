@@ -35,7 +35,6 @@ import org.pfred.PFREDConstant;
 import org.pfred.PFREDContext;
 import org.pfred.RNAActionHandler;
 import org.pfred.axis.client.PFREDAxisClient;
-import org.pfred.enumerator.SwingWorker;
 import org.pfred.icon.IconLoader;
 import org.pfred.model.Oligo;
 
@@ -129,7 +128,6 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
 //        cleanDir();
         stopThreads();
     }
-
 
     public void cleanServerRunDir() {
         if (serverRunDirExist) {
@@ -345,7 +343,6 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                 Oligo.TYPE_PARENT_DNA_OLIGO,
                 "name", "start", "end", null);
 
-
         dispose();
         fah.setTargetSeq(getPrimaryTranscriptID(), getPrimaryTranscriptSeq());
 
@@ -429,11 +426,9 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
         stepTwoParamPanel.add(l_offTargetSearch);
         stepTwoParamPanel.add(jcb_runOffTargetSearch);
 
-
         l_missMatches = new JLabel("# miss-matches:", JLabel.TRAILING);
         stepTwoParamPanel.add(l_missMatches);
         stepTwoParamPanel.add(jtf_offTargetMismatch);
-
 
         l_efficacyModel = new JLabel("Run Efficacy Model:", JLabel.TRAILING);
         jcb_runEfficacyModel.setSelected(true);
@@ -597,7 +592,6 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                 cancelled = false;
                 startProgress("   Enumerate and annotate oligos --- may take 30 to 60 minutes   ");
 
-
                 String[] results = PFREDAxisClient.enumerate(runName, secondaryTranscriptIDs, primaryTranscriptID, "" + oligo_len);
                 cancelled = false;
                 startProgress("   Enumerate and annotate oligos --- may take 30 to 60 minutes   ");
@@ -622,10 +616,8 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                 return "Enumeration Failed";
             }
 
-
             clearCache();
             cacheSequences(seqs);
-
 
             if (jcb_runOffTargetSearch.isSelected()) {
                 try {
@@ -651,7 +643,6 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                     return "Off Target Search Failed";
                 }
             }
-
 
             if (jcb_runEfficacyModel.isSelected()) {
                 try {
@@ -687,13 +678,16 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
         public void finished() {
             if (cancelled) {
                 stopProgress();
-                return;
             }
 
-            finalOligoSummary = finalResults;
-            postProcessStepTwo();
-            stopProgress();
-
+            String message = (String) get();
+            if (message.equals("All Done")) {
+                finalOligoSummary = finalResults;
+                postProcessStepTwo();
+                stopProgress();
+            } else {
+                JOptionPane.showMessageDialog(parent, message);
+            }
         }
     }
 
