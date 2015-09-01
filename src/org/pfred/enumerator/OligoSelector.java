@@ -104,8 +104,10 @@ public class OligoSelector extends JDialog implements ActionListener, ComponentL
     String ENS_PREFIX = "ENS";
     String MISMATCHES_SUFFIX = "_Mismatches";
     String ORTHOLOG_PREFIX = "orthologs_";
-    String[] ENSEMBL_SPECIES_PREFIX = new String[]{"ENST", "ENSMUST", "ENSRNOT", "ENSCAFT", "ENSPTRT", "ENSMMUT"};
-    String[] ENSEMBL_SPECIES_NAMES = new String[]{"human", "mouse", "rat", "dog", "chimp", "rhesus macaque"};
+//    String[] ENSEMBL_SPECIES_PREFIX = new String[]{"ENST", "ENSMUST", "ENSRNOT", "ENSCAFT", "ENSPTRT", "ENSMMUT"};
+//    String[] ENSEMBL_SPECIES_NAMES = new String[]{"human", "mouse", "rat", "dog", "chimp", "rhesus macaque"};
+    String[] ENSEMBL_SPECIES_PREFIX = new String[]{"ENST", "ENSMUST", "ENSRNOT", "ENSCAFT", "ENSPTRT"};
+    String[] ENSEMBL_SPECIES_NAMES = new String[]{"human", "mouse", "rat", "dog", "chimp"};
     JLabel filterCount;
     Color headerColor = BorderFactory.createTitledBorder("").getTitleColor();
     private Font defaultFont = new JLabel().getFont();

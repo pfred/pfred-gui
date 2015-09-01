@@ -54,8 +54,9 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
     JCheckBox jcb_mouse = null;
     JCheckBox jcb_dog = null;
     JCheckBox jcb_chimp = null;
-    JCheckBox jcb_monkey = null;
-    JComboBox jcb_specifiedSpecies = new JComboBox(new String[]{"human", "rat", "mouse", "dog", "chimp", "rhesus macaque"});
+//    JCheckBox jcb_monkey = null;
+//    JComboBox jcb_specifiedSpecies = new JComboBox(new String[]{"human", "rat", "mouse", "dog", "chimp", "rhesus macaque"});
+    JComboBox jcb_specifiedSpecies = new JComboBox(new String[]{"human", "rat", "mouse", "dog", "chimp"});
     JComboBox jcb_databases = new JComboBox(new String[]{"Human transcriptome", "Small test database"});
     JComboBox jcb_design = new JComboBox(new String[]{"siRNA design", "AntiSense design"});
     JTextField jtf_gene = new JTextField("ENSG00000165175", 40);
@@ -250,12 +251,12 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
             }
             buffer.append("chimp");
         }
-        if (jcb_monkey.isSelected()) {
-            if (buffer.length() != 0) {
-                buffer.append(",");
-            }
-            buffer.append("macaque");
-        }
+//        if (jcb_monkey.isSelected()) {
+//            if (buffer.length() != 0) {
+//                buffer.append(",");
+//            }
+//            buffer.append("macaque");
+//        }
 
         species = buffer.toString();
         return species;
@@ -388,8 +389,8 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
         jcb_dog.setName("dog");
         jcb_chimp = new JCheckBox("chimp");
         jcb_chimp.setName("chimp");
-        jcb_monkey = new JCheckBox("rhesus macaque");
-        jcb_monkey.setName("monkey");
+//        jcb_monkey = new JCheckBox("rhesus macaque");
+//        jcb_monkey.setName("monkey");
 
         //layout the panels
         speciesPanel = new JPanel();
@@ -400,7 +401,7 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
         speciesPanel.add(jcb_mouse);
         speciesPanel.add(jcb_dog);
         speciesPanel.add(jcb_chimp);
-        speciesPanel.add(jcb_monkey);
+//        speciesPanel.add(jcb_monkey);
 
         stepOnePanel.setBorder(BorderFactory.createTitledBorder("Step 1: Retrieve target and ortholog transcripts "));
         stepOnePanel.setLayout(new BorderLayout());
