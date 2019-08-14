@@ -26,7 +26,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 
 import javax.swing.JOptionPane;
-import org.pfred.axis.client.PFREDAxisClientConfiguration;
+import org.pfred.rest.RestServiceClient;
+// import org.pfred.axis.client.PFREDAxisClientConfiguration;
 
 
 public class ConfigurationActionHandler implements ActionListener {
@@ -45,15 +46,17 @@ public class ConfigurationActionHandler implements ActionListener {
             String name = ((Component) src).getName();
 
             if (name.equals("configureService")) {
-                String current = PFREDAxisClientConfiguration.getInstance().getWSEndpoint();
+                // String current = PFREDAxisClientConfiguration.getInstance().getWSEndpoint();
+                String current = RestServiceClient.getEndPoint();
                 if (null == current || current.length() ==0 ){
                     current = context.getDefaultServiceEndpoint();
                 }
                 String result = JOptionPane.showInputDialog(parent, "***  Please enter the full URL to PFRED service in the text box below  ***", current);
                 if (null != result && result.length() >0 && result.startsWith("http")) {
-                    PFREDAxisClientConfiguration.getInstance().setWSEndPoint(result);
+                    RestServiceClient.setEndPoint(result);
+                    // PFREDAxisClientConfiguration.getInstance().setWSEndPoint(result);
                 }
-            } 
+            }
         }
     }
 }

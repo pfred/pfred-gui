@@ -70,7 +70,8 @@ import org.pfred.table.OligoTableMouseAdaptor;
 import org.pfred.table.CustomTablePanel;
 import org.pfred.pme.MoleculeEditor;
 import com.pfizer.rtc.notation.editor.editor.MacroMoleculeViewer;
-import org.pfred.axis.client.PFREDAxisClientConfiguration;
+import org.pfred.rest.RestServiceClient;
+// import org.pfred.axis.client.PFREDAxisClientConfiguration;
 
 /**
  *
@@ -122,7 +123,7 @@ public class PFREDView
         title = resourceBundle.getString("Application.name") + " (" + resourceBundle.getString("Application.id") + " v" + resourceBundle.getString("Application.version") + ")";
         return title;
     }
-       
+
     /**
      * create the binding of ctrl-V to the frame
      */
@@ -174,7 +175,7 @@ public class PFREDView
 
         rnaActionHandler = context.getUIManager().getRNAActionHandler();
         selectionActionHandler = context.getUIManager().getSelectionActionHandler();
-        
+
         configurationActionHandler = context.getUIManager().getConfigurationActionHandler();
 
         //keyStroke binding
@@ -221,7 +222,7 @@ public class PFREDView
         if (rnaActionHandler.isAdvancedOligoEnumeratorDialogInitialized()) {
             rnaActionHandler.getAdvancedOligoEnumerationDialog().cleanServerRunDir();
         }
-        
+
         // just assume we are talking THIS window unless told otherwise...
         Window w = this;
 
@@ -691,7 +692,7 @@ public class PFREDView
         mi.setName("createOligoBarChart");
         mi.setToolTipText("Bar chart showing oligo structure along with data");
         mi.addActionListener(rnaActionHandler);
-        
+
         // ********************** for Configuration menu ************************
         menu = new JMenu("Config");
         menubar.add(menu);
@@ -700,7 +701,7 @@ public class PFREDView
         mi.setName("configureService");
         mi.setToolTipText("Change PFRED service URL");
         mi.addActionListener(configurationActionHandler);
-        
+
     }
 
     public void init() {
@@ -797,11 +798,11 @@ public class PFREDView
             ex.printStackTrace();
 
         }
-        
-        
+
+
         int a = 0;
         String molFile = null;
-       
+
 
 
         while (args.length > a) {
@@ -818,13 +819,14 @@ public class PFREDView
         }
 
         PFREDContext context = new PFREDContext();
-        final PFREDView f = new PFREDView(context);       
+        final PFREDView f = new PFREDView(context);
         f.setSize(950, 700);
         f.setVisible(true);
-        
+
         //set default service endpoint
         String url = context.getDefaultServiceEndpoint();
-        PFREDAxisClientConfiguration.getInstance().setWSEndPoint(url);
+        RestServiceClient.setEndPoint(url);
+        // PFREDAxisClientConfiguration.getInstance().setWSEndPoint(url);
 
         if (molFile != null) {
             LoadPFREDFileRunner runner = new LoadPFREDFileRunner(context, molFile);

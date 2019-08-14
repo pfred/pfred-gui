@@ -29,13 +29,15 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
-import javax.xml.rpc.ServiceException;
+// import javax.xml.rpc.ServiceException;
 import org.pfred.FileActionHandler;
 import org.pfred.PFREDConstant;
 import org.pfred.PFREDContext;
 import org.pfred.RNAActionHandler;
-import org.pfred.axis.client.PFREDAxisClient;
+// import org.pfred.axis.client.PFREDAxisClient;
+import org.pfred.rest.RestServiceClient;
 import org.pfred.icon.IconLoader;
+import java.io.IOException;
 import org.pfred.model.Oligo;
 
 public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionListener {
@@ -54,8 +56,8 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
     JCheckBox jcb_mouse = null;
     JCheckBox jcb_dog = null;
     JCheckBox jcb_chimp = null;
-//    JCheckBox jcb_monkey = null;
-//    JComboBox jcb_specifiedSpecies = new JComboBox(new String[]{"human", "rat", "mouse", "dog", "chimp", "rhesus macaque"});
+    //    JCheckBox jcb_monkey = null;
+    //    JComboBox jcb_specifiedSpecies = new JComboBox(new String[]{"human", "rat", "mouse", "dog", "chimp", "rhesus macaque"});
     JComboBox jcb_specifiedSpecies = new JComboBox(new String[]{"human", "rat", "mouse", "dog", "chimp"});
     JComboBox jcb_databases = new JComboBox(new String[]{"Human transcriptome", "Small test database"});
     JComboBox jcb_design = new JComboBox(new String[]{"siRNA design", "AntiSense design"});
@@ -104,7 +106,7 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
     public boolean isSuccessful;
     private static String runName;
     private boolean serverRunDirExist = false;
-//
+    //
 
     public AdvancedOligoEnumeratorDialog(JFrame parent, PFREDContext context) throws Exception {
         super(parent, "Advanced Oligo Enumerator", true);
@@ -126,19 +128,19 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
 
     public void dispose() {
         super.dispose();
-//        cleanDir();
+        //        cleanDir();
         stopThreads();
     }
 
     public void cleanServerRunDir() {
         if (serverRunDirExist) {
-            try {
-                PFREDAxisClient.cleanRunDir(runName);
-            } catch (ServiceException ex) {
-                Logger.getLogger(AdvancedOligoEnumeratorDialog.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (RemoteException ex) {
-                Logger.getLogger(AdvancedOligoEnumeratorDialog.class.getName()).log(Level.SEVERE, null, ex);
+            try{
+                String success = RestServiceClient.runScriptUtilitiesService("CleanRun", runName, null, null, null);
+                // PFREDAxisClient.cleanRunDir(runName);
+            } catch (Exception ex){
+                Logger.getLogger(AdvancedOligoEnumeratorDialog.class.getName()).log(Level.SEVERE, "Error executing CleanRun Service", ex);
             }
+            // Logger.getLogger(AdvancedOligoEnumeratorDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -251,12 +253,12 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
             }
             buffer.append("chimp");
         }
-//        if (jcb_monkey.isSelected()) {
-//            if (buffer.length() != 0) {
-//                buffer.append(",");
-//            }
-//            buffer.append("macaque");
-//        }
+        //        if (jcb_monkey.isSelected()) {
+        //            if (buffer.length() != 0) {
+        //                buffer.append(",");
+        //            }
+        //            buffer.append("macaque");
+        //        }
 
         species = buffer.toString();
         return species;
@@ -341,8 +343,8 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
         FileActionHandler fah = context.getUIManager().getFileActionHandler();
         //do some checking for data mapping with default
         fah.loadOligoCSV(lines, 1, fixHeaderLine(lines[0], ","), ",", "parent_dna_oligo",
-                Oligo.TYPE_PARENT_DNA_OLIGO,
-                "name", "start", "end", null);
+                         Oligo.TYPE_PARENT_DNA_OLIGO,
+                         "name", "start", "end", null);
 
         dispose();
         fah.setTargetSeq(getPrimaryTranscriptID(), getPrimaryTranscriptSeq());
@@ -389,8 +391,8 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
         jcb_dog.setName("dog");
         jcb_chimp = new JCheckBox("chimp");
         jcb_chimp.setName("chimp");
-//        jcb_monkey = new JCheckBox("rhesus macaque");
-//        jcb_monkey.setName("monkey");
+        //        jcb_monkey = new JCheckBox("rhesus macaque");
+        //        jcb_monkey.setName("monkey");
 
         //layout the panels
         speciesPanel = new JPanel();
@@ -401,7 +403,7 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
         speciesPanel.add(jcb_mouse);
         speciesPanel.add(jcb_dog);
         speciesPanel.add(jcb_chimp);
-//        speciesPanel.add(jcb_monkey);
+        //        speciesPanel.add(jcb_monkey);
 
         stepOnePanel.setBorder(BorderFactory.createTitledBorder("Step 1: Retrieve target and ortholog transcripts "));
         stepOnePanel.setLayout(new BorderLayout());
@@ -437,9 +439,9 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
         stepTwoParamPanel.add(jcb_runEfficacyModel);
 
         SpringUtilities.makeCompactGrid(stepTwoParamPanel, //parent
-                5, 2, //4x2 grid
-                3, 3, //initX, initY
-                3, 3); //xPad, yPad
+                                        5, 2, //4x2 grid
+                                        3, 3, //initX, initY
+                                        3, 3); //xPad, yPad
 
         initButtonPanel();
         initStepOnePanel();//by default have the step one panel there
@@ -477,9 +479,9 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
         centerPanel.add(new JPanel());
         centerPanel.add(new JPanel());
         SpringUtilities.makeCompactGrid(centerPanel, //parent
-                2, 4,
-                3, 3, //initX, initY
-                3, 3); //xPad, yPad
+                                        2, 4,
+                                        3, 3, //initX, initY
+                                        3, 3); //xPad, yPad
     }
 
     private void enablePanel(Container c, boolean enabled) {
@@ -593,7 +595,9 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                 cancelled = false;
                 startProgress("   Enumerate and annotate oligos --- may take 30 to 60 minutes   ");
 
-                String[] results = PFREDAxisClient.enumerate(runName, secondaryTranscriptIDs, primaryTranscriptID, "" + oligo_len);
+                String[] results = RestServiceClient.runEnumerateUtilitiesService("enumerate", runName, secondaryTranscriptIDs,
+                                                                               primaryTranscriptID, "" + oligo_len);
+                // String[] results = PFREDAxisClient.enumerate(runName, secondaryTranscriptIDs, primaryTranscriptID, "" + oligo_len);
                 cancelled = false;
                 startProgress("   Enumerate and annotate oligos --- may take 30 to 60 minutes   ");
                 if (results != null && results.length == 2) {
@@ -629,11 +633,13 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                     System.out.println("ids=" + ids);
                     if (isAntiSenseDesign()) {
                         //Bowtie is broken for all antisense
-                        finalResults = PFREDAxisClient.runAntisenseOffTargetSearch(runName, species, ids, "" + getMissMatches());
+                        finalResults = RestServiceClient.runOffTargetSearchService("ASO", species, runName, ids, "" + getMissMatches());
+                        // finalResults = PFREDAxisClient.runAntisenseOffTargetSearch(runName, species, ids, "" + getMissMatches());
                         System.out.println("------");
                         System.out.println(finalResults);
                     } else {
-                        finalResults = PFREDAxisClient.runsiOffTargetSearch(runName, species, ids, "" + getMissMatches());
+                        finalResults = RestServiceClient.runOffTargetSearchService("siRNA", species, runName, ids, "" + getMissMatches());
+                        // finalResults = PFREDAxisClient.runsiOffTargetSearch(runName, species, ids, "" + getMissMatches());
                         System.out.println("------");
                         System.out.println(finalResults);
                     }
@@ -650,11 +656,13 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                     startProgress("   Running activity model  ");
                     String primarySeq = getPrimaryTranscriptSeq();
                     if (isAntiSenseDesign()) {
-                        finalResults = PFREDAxisClient.runAntisenseActivityModel(runName, primarySeq, "" + oligo_len);
+                        finalResults = RestServiceClient.runActivityModelService("ASO", runName, primarySeq, "" + oligo_len);
+                        // finalResults = PFREDAxisClient.runAntisenseActivityModel(runName, primarySeq, "" + oligo_len);
                         System.out.println("------");
                         System.out.println(finalResults);
                     } else {
-                        finalResults = PFREDAxisClient.runsiActivityModel(runName, primarySeq);
+                        finalResults = RestServiceClient.runActivityModelService("siRNA", runName, primarySeq, null);
+                        // finalResults = PFREDAxisClient.runsiActivityModel(runName, primarySeq);
                         System.out.println("------");
                         System.out.println(finalResults);
                     }
@@ -708,7 +716,8 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                 startProgress("   Retrieving transcripts and orthologs   ");
 
                 System.out.println("runName=" + runName);
-                result = PFREDAxisClient.getOrthologs(runName, enseblID, requestedSpecies, species);
+                result = RestServiceClient.runScriptUtilitiesService("Orthologs", runName, enseblID, requestedSpecies, species);
+                // result = PFREDAxisClient.getOrthologs(runName, enseblID, requestedSpecies, species);
                 System.out.println(result);
 
                 System.out.println("DONE");
