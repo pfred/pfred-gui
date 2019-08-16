@@ -71,14 +71,12 @@ import org.pfred.table.CustomTablePanel;
 import org.pfred.pme.MoleculeEditor;
 import com.pfizer.rtc.notation.editor.editor.MacroMoleculeViewer;
 import org.pfred.rest.RestServiceClient;
-// import org.pfred.axis.client.PFREDAxisClientConfiguration;
-
 /**
  *
  * <p>Title: </p>
  * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2005</p>
- * <p>Company: Pfizer Re   Technology Center</p>
+ * <p>Copyright: Copyright (c) 2019</p>
+ * <p>Company: Biogen</p>
  * @author $Author: xih $
  * @version $Revision: 1.5 $   $Date: 2008/07/10 15:08:09 $
  */
@@ -826,7 +824,6 @@ public class PFREDView
         //set default service endpoint
         String url = context.getDefaultServiceEndpoint();
         RestServiceClient.setEndPoint(url);
-        // PFREDAxisClientConfiguration.getInstance().setWSEndPoint(url);
 
         if (molFile != null) {
             LoadPFREDFileRunner runner = new LoadPFREDFileRunner(context, molFile);

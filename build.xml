@@ -63,17 +63,6 @@
                 <include name="pme/xbean-2.2.0.jar"/>
                 <include name="pme/xerces.jar"/>
 
-                <!-- <!-\- 3 PFREDAxisClient jars -\-> -->
-                <!-- <include name="PFREDAxisClient/axis1.4.2.jar"/> -->
-                <!-- <include name="PFREDAxisClient/commons-httpclient-3.0.1.jar"/> -->
-                <!-- <include name="PFREDAxisClient/commons-logging-1.0.4.jar"/> -->
-                <!-- <include name="PFREDAxisClient/jaxrpc-api.jar"/> -->
-                <!-- <include name="PFREDAxisClient/jaxrpc-impl.jar"/> -->
-                <!-- <include name="PFREDAxisClient/PFREDAxisClient-1.0.jar"/> -->
-                <!-- <include name="PFREDAxisClient/saaj-api-1.3.jar"/> -->
-                <!-- <include name="PFREDAxisClient/saaj-impl-1.3.jar"/> -->
-                <!-- <include name="PFREDAxisClient/wsdl4j-1.6.1.jar"/> -->
-
                 <!-- 4 jfreechar jars -->
                 <include name="jfreechart/jcommon-1.0.16.jar"/>
                 <include name="jfreechart/jfreechart-1.0.13.jar"/>
@@ -189,17 +178,6 @@
         <pathelement location="lib/pme/wsdl4j.jar"/>
         <pathelement location="lib/pme/xbean-2.2.0.jar"/>
         <pathelement location="lib/pme/xerces.jar"/>
-
-        <!-- <!-\- 3 PFREDAxisClient jars -\-> -->
-        <!-- <pathelement location="lib/PFREDAxisClient/axis1.4.2.jar"/> -->
-        <!-- <pathelement location="lib/PFREDAxisClient/commons-httpclient-3.0.1.jar"/> -->
-        <!-- <pathelement location="lib/PFREDAxisClient/commons-logging-1.0.4.jar"/> -->
-        <!-- <pathelement location="lib/PFREDAxisClient/jaxrpc-api.jar"/> -->
-        <!-- <pathelement location="lib/PFREDAxisClient/jaxrpc-impl.jar"/> -->
-        <!-- <pathelement location="lib/PFREDAxisClient/PFREDAxisClient-1.0.jar"/> -->
-        <!-- <pathelement location="lib/PFREDAxisClient/saaj-api-1.3.jar"/> -->
-        <!-- <pathelement location="lib/PFREDAxisClient/saaj-impl-1.3.jar"/> -->
-        <!-- <pathelement location="lib/PFREDAxisClient/wsdl4j-1.6.1.jar"/> -->
 
         <!-- 4 jfreechar jars -->
         <pathelement location="lib/jfreechart/jcommon-1.0.16.jar"/>

@@ -34,7 +34,6 @@ import org.pfred.FileActionHandler;
 import org.pfred.PFREDConstant;
 import org.pfred.PFREDContext;
 import org.pfred.RNAActionHandler;
-// import org.pfred.axis.client.PFREDAxisClient;
 import org.pfred.rest.RestServiceClient;
 import org.pfred.icon.IconLoader;
 import java.io.IOException;
@@ -136,7 +135,6 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
         if (serverRunDirExist) {
             try{
                 String success = RestServiceClient.runScriptUtilitiesService("CleanRun", runName, null, null, null);
-                // PFREDAxisClient.cleanRunDir(runName);
             } catch (Exception ex){
                 Logger.getLogger(AdvancedOligoEnumeratorDialog.class.getName()).log(Level.SEVERE, "Error executing CleanRun Service", ex);
             }
@@ -597,7 +595,6 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
 
                 String[] results = RestServiceClient.runEnumerateUtilitiesService("enumerate", runName, secondaryTranscriptIDs,
                                                                                primaryTranscriptID, "" + oligo_len);
-                // String[] results = PFREDAxisClient.enumerate(runName, secondaryTranscriptIDs, primaryTranscriptID, "" + oligo_len);
                 cancelled = false;
                 startProgress("   Enumerate and annotate oligos --- may take 30 to 60 minutes   ");
                 if (results != null && results.length == 2) {
@@ -632,14 +629,11 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                     System.out.println("species=" + species);
                     System.out.println("ids=" + ids);
                     if (isAntiSenseDesign()) {
-                        //Bowtie is broken for all antisense
                         finalResults = RestServiceClient.runOffTargetSearchService("ASO", species, runName, ids, "" + getMissMatches());
-                        // finalResults = PFREDAxisClient.runAntisenseOffTargetSearch(runName, species, ids, "" + getMissMatches());
                         System.out.println("------");
                         System.out.println(finalResults);
                     } else {
                         finalResults = RestServiceClient.runOffTargetSearchService("siRNA", species, runName, ids, "" + getMissMatches());
-                        // finalResults = PFREDAxisClient.runsiOffTargetSearch(runName, species, ids, "" + getMissMatches());
                         System.out.println("------");
                         System.out.println(finalResults);
                     }
@@ -657,12 +651,10 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                     String primarySeq = getPrimaryTranscriptSeq();
                     if (isAntiSenseDesign()) {
                         finalResults = RestServiceClient.runActivityModelService("ASO", runName, primarySeq, "" + oligo_len);
-                        // finalResults = PFREDAxisClient.runAntisenseActivityModel(runName, primarySeq, "" + oligo_len);
                         System.out.println("------");
                         System.out.println(finalResults);
                     } else {
                         finalResults = RestServiceClient.runActivityModelService("siRNA", runName, primarySeq, null);
-                        // finalResults = PFREDAxisClient.runsiActivityModel(runName, primarySeq);
                         System.out.println("------");
                         System.out.println(finalResults);
                     }
@@ -717,7 +709,6 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
 
                 System.out.println("runName=" + runName);
                 result = RestServiceClient.runScriptUtilitiesService("Orthologs", runName, enseblID, requestedSpecies, species);
-                // result = PFREDAxisClient.getOrthologs(runName, enseblID, requestedSpecies, species);
                 System.out.println(result);
 
                 System.out.println("DONE");
