@@ -13,7 +13,7 @@ import org.pfred.rest.RestServiceResult;
  */
 
 public class RestServiceClient {
-    private static String endpoint = "http://localhost:8080";
+    private static String endpoint = "https://os.biogen.com";
     private static String service;
     private static String uri;
 
@@ -36,7 +36,7 @@ public class RestServiceClient {
     public static String runActivityModelService(String pathValue, final String runDir,
                                                  final String PrimarySeq, final String oligoLength){
         try {
-            RestServiceCaller.setHttpsEnabled(false);
+            RestServiceCaller.setHttpsEnabled(true);
             service = "ActivityModel";
 
             uri = endpoint + "/" + "PFREDRestService/service" + "/" +
@@ -67,7 +67,7 @@ public class RestServiceClient {
     public static String runOffTargetSearchService(String pathValue, final String species, final String runDir,
                                                  final String IDs, final String missMatches){
         try {
-            RestServiceCaller.setHttpsEnabled(false);
+            RestServiceCaller.setHttpsEnabled(true);
             service = "OffTargetSearch";
 
             uri = endpoint + "/" + "PFREDRestService/service" + "/" +
@@ -97,7 +97,7 @@ public class RestServiceClient {
                                                    final String ensemblID, final String requestedSpecies,
                                                    final String species){
         try {
-            RestServiceCaller.setHttpsEnabled(false);
+            RestServiceCaller.setHttpsEnabled(true);
             service = "ScriptUtilities";
 
             uri = endpoint + "/" + "PFREDRestService/service" + "/" +
@@ -131,7 +131,7 @@ public class RestServiceClient {
                                                       final String oligoLen){
         String[] results = new String[2];
         try {
-            RestServiceCaller.setHttpsEnabled(false);
+            RestServiceCaller.setHttpsEnabled(true);
             service = "ScriptUtilities";
 
             uri = endpoint + "/" + "PFREDRestService/service" + "/" +
