@@ -19,6 +19,7 @@
  */
 package org.pfred.enumerator;
 
+import org.pfred.rest.RestServiceClient;
 import javax.swing.table.*;
 import com.pfizer.rtc.util.FileUtil;
 import java.util.ArrayList;
@@ -209,14 +210,23 @@ public class TargetTableModel
         data.add(row);
     }
 
-    public void addTranscript(ArrayList transcripts) {
+    public void addTranscript(String runName, ArrayList transcripts) {
         HashMap names = new HashMap();
         int size = transcripts.size();
+        String fastafile = "sequence.fa";
+        String msg = null;
+
+        msg = "";
         for (int i = 0; i < size; i++) {
             Transcript t = (Transcript) transcripts.get(i);
             names.put(t.getName(), t);
+            msg +="\n";
+            // add transcript and sequence to sequence file here
+            msg += ">" + t.getName() + "\n";
+            msg += t.getSequence();
         }
 
+        String Respond = RestServiceClient.runAddToFileUtilityService(runName, fastafile, msg);
         size = data.size();
         for (int i = size - 1; i >= 0; i--) {
             Transcript row = (Transcript) data.get(i);

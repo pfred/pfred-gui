@@ -498,7 +498,7 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
 
         String[] annotation = seqAnnotation.split("\n");
         try {
-            targetPanel = new TargetTablePanel(annotation, ",", 0, 2);
+            targetPanel = new TargetTablePanel(runName, annotation, ",", 0, 2);
             targetPanel.setBorder(BorderFactory.createEtchedBorder());
             stepTwoPanel.removeAll();
             stepTwoPanel.add(targetPanel, BorderLayout.CENTER);

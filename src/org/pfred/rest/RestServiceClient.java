@@ -126,6 +126,34 @@ public class RestServiceClient {
         return null;
     }
 
+    public static String runAddToFileUtilityService(final String runDir, final String file, final String text){
+        String pathValue = "appendToFile";
+        try {
+            RestServiceCaller.setHttpsEnabled(true);
+            service = "ScriptUtilities";
+
+            uri = endpoint + "/" + "PFREDRestService/service" + "/" +
+                service + "/" + pathValue;
+
+            URI newuri = new URI(uri);
+
+            newuri = appendUri(uri, "FileName=" + file);
+            newuri = appendUri(newuri.toString(), "Text=" + text);
+            newuri = appendUri(newuri.toString(), "RunDirectory=" + runDir);
+
+            RestServiceResult restResult = RestServiceCaller.get(newuri.toString(), 1000);
+
+            // Get response as string
+            return restResult.getResultString();
+
+        } catch (URISyntaxException e){
+            e.printStackTrace();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static String[] runEnumerateUtilitiesService(String pathValue, final String runDir,
                                                       final String secondaryIDs, final String primaryID,
                                                       final String oligoLen){
