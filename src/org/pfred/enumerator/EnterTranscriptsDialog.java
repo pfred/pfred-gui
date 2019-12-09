@@ -42,7 +42,7 @@ public class EnterTranscriptsDialog
   private ArrayList transcripts=new ArrayList();
 
   public static String [] species_list=new String[]{"Homo_sapiens", "Macaca_mulatta", "Mus_musculus",
-      "Rattus_norvegicus","Canis_familiaris","Pan_troglodytes"};
+                                                    "Rattus_norvegicus","Canis_familiaris","Pan_troglodytes", "Other"};
 
   public EnterTranscriptsDialog(JDialog parent) {
     super(parent,"Enter User-Specified Transcripts", true);
