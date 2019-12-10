@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 
 import org.pfred.rest.RestServiceCaller;
 import org.pfred.rest.RestServiceResult;
+import org.pfred.SSL.SSLFix;
 
 /**
  * @author Dario Cruz
@@ -36,6 +37,7 @@ public class RestServiceClient {
     public static String runActivityModelService(String pathValue, final String runDir,
                                                  final String PrimarySeq, final String oligoLength){
         try {
+            SSLFix.execute();
             RestServiceCaller.setHttpsEnabled(true);
             service = "ActivityModel";
 
@@ -67,6 +69,7 @@ public class RestServiceClient {
     public static String runOffTargetSearchService(String pathValue, final String species, final String runDir,
                                                  final String IDs, final String missMatches){
         try {
+            SSLFix.execute();
             RestServiceCaller.setHttpsEnabled(true);
             service = "OffTargetSearch";
 
@@ -97,6 +100,7 @@ public class RestServiceClient {
                                                    final String ensemblID, final String requestedSpecies,
                                                    final String species){
         try {
+            SSLFix.execute();
             RestServiceCaller.setHttpsEnabled(true);
             service = "ScriptUtilities";
 
@@ -129,6 +133,7 @@ public class RestServiceClient {
     public static String runAddToFileUtilityService(final String runDir, final String file, final String text){
         String pathValue = "appendToFile";
         try {
+            SSLFix.execute();
             RestServiceCaller.setHttpsEnabled(true);
             service = "ScriptUtilities";
 
@@ -159,6 +164,7 @@ public class RestServiceClient {
                                                       final String oligoLen){
         String[] results = new String[2];
         try {
+            SSLFix.execute();
             RestServiceCaller.setHttpsEnabled(true);
             service = "ScriptUtilities";
 
