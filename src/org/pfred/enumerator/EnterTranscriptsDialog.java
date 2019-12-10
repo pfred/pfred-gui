@@ -66,7 +66,7 @@ public class EnterTranscriptsDialog
 
     JPanel centerPane =new JPanel();
     centerPane.setLayout(new BorderLayout());
-    centerPane.setBorder(BorderFactory.createTitledBorder("Enter FASTA sequence: "));
+    centerPane.setBorder(BorderFactory.createTitledBorder("Enter >ENSEMBL ID followed by FASTA sequence: "));
     jta_seq=new JTextArea(6,50);
     JScrollPane jsp_seq=new JScrollPane(jta_seq);
     centerPane.add(jsp_seq);
