@@ -578,6 +578,7 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
         String finalResults = "";
         String seqs = "";
         boolean cancelled = false;
+        int retries = 30;
 
         public Object construct() {
             String primaryTranscriptID = getPrimaryTranscriptID();
@@ -590,27 +591,38 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
             }
 
             try {
+                String[] results = null;
                 cancelled = false;
                 startProgress("   Enumerate and annotate oligos --- may take 30 to 60 minutes   ");
 
-                String[] results = RestServiceClient.runEnumerateUtilitiesService("enumerate", runName, secondaryTranscriptIDs,
-                                                                               primaryTranscriptID, "" + oligo_len);
-                cancelled = false;
-                startProgress("   Enumerate and annotate oligos --- may take 30 to 60 minutes   ");
+                while (results == null && retries > 0){
+                    results = RestServiceClient.runEnumerateUtilitiesService("enumerate", runName, secondaryTranscriptIDs,
+                                                                                primaryTranscriptID, "" + oligo_len);
+                    if(results == null){
+                        System.out.println("Connection refused, retrying..." + retries);
+                        retries = retries - 1;
+                    }
+                }
                 if (results != null && results.length == 2) {
 
                     if (results[0] != null) {
                         finalResults = results[0];
                         System.out.println("------");
-                        System.out.println(finalResults);
+                        // System.out.println(finalResults);
+                        System.out.println("DONE");
                     }
 
                     if (results[1] != null) {
                         seqs = results[1];
                         System.out.println("------");
-                        System.out.println(seqs);
+                        // System.out.println(seqs);
+                        System.out.println("DONE");
                     }
                     serverRunDirExist = true;
+                }else{
+                    cancelled = true;
+                    System.out.println("Maximum connection retries exceeded, aborting...");
+                    return "Enumeration Failed";
                 }
             } catch (Exception e) {
                 cancelled = true;
@@ -623,19 +635,42 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
 
             if (jcb_runOffTargetSearch.isSelected()) {
                 try {
+                    finalResults = "";
                     startProgress("   Running Off Target Search  ");
                     String species = targetPanel.getTargetTableModel().getListOfSpecies(",");
                     String ids = targetPanel.getTargetTableModel().getListOfTranscripts(",");
                     System.out.println("species=" + species);
                     System.out.println("ids=" + ids);
                     if (isAntiSenseDesign()) {
-                        finalResults = RestServiceClient.runOffTargetSearchService("ASO", species, runName, ids, "" + getMissMatches());
-                        System.out.println("------");
+                        while (finalResults.isEmpty() && retries > 0){
+                            finalResults = RestServiceClient.runOffTargetSearchService("ASO", species, runName, ids, "" + getMissMatches());
+                            System.out.println("------");
+                            if (finalResults.isEmpty()){
+                                System.out.println("Connection refused, retrying..." + retries);
+                                retries = retries - 1;
+                            }
+                        }
+                        if (finalResults.isEmpty()){
+                            cancelled = true;
+                            System.out.println("Maximum connection retries exceeded");
+                        }
                         System.out.println(finalResults);
                     } else {
-                        finalResults = RestServiceClient.runOffTargetSearchService("siRNA", species, runName, ids, "" + getMissMatches());
-                        System.out.println("------");
-                        System.out.println(finalResults);
+                        while (finalResults.isEmpty() && retries > 0){
+                            finalResults = RestServiceClient.runOffTargetSearchService("siRNA", species, runName, ids, "" + getMissMatches());
+                            System.out.println("------");
+                            if (finalResults.isEmpty()){
+                                System.out.println("Connection refused, retrying..." + retries);
+                                retries = retries - 1;
+                            }
+                        }
+                        if (finalResults.isEmpty()){
+                            cancelled = true;
+                            System.out.println("Maximum connection retries exceeded");
+                            return "Off Target Search Failed";
+                        }
+                        // System.out.println(finalResults);
+                        System.out.println("DONE");
                     }
                     serverRunDirExist = true;
                 } catch (Exception e) {
@@ -694,8 +729,9 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
 
     public class GetSequenceThread extends SwingWorker {
 
-        String result = "";
+        String result = null;
         boolean cancelled = false;
+        int retries = 20;
 
         public Object construct() {
 
@@ -708,9 +744,22 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                 startProgress("   Retrieving transcripts and orthologs   ");
 
                 System.out.println("runName=" + runName);
-                result = RestServiceClient.runScriptUtilitiesService("Orthologs", runName, enseblID, requestedSpecies, species);
-                System.out.println(result);
 
+                while (result == null && retries > 0){
+                    result = RestServiceClient.runScriptUtilitiesService("Orthologs", runName, enseblID, requestedSpecies, species);
+                    if(result == null){
+                        System.out.println("Connection refused, retrying..." + retries);
+                        retries = retries - 1;
+                    }
+                }
+                if(result == null){
+                    System.out.println("Connection refused, maximum attempts reached, aborting...");
+                    cancelled = true;
+                    stopProgress();
+                    return "Interrupted";
+                }
+
+                System.out.println(result);
                 System.out.println("DONE");
                 serverRunDirExist = true;
 
