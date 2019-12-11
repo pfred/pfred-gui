@@ -189,6 +189,8 @@ public class RestServiceClient {
 
             newuri = appendUri(uri, "RunDirectory=" + runDir);
 
+            restResult = RestServiceCaller.get(newuri.toString(), 1000);
+
             // Get second string from enumerate_second
             results[1] = restResult.getResultString();
 

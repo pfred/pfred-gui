@@ -734,8 +734,8 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                 return;
             }
 
-            seqAnnotation = result;
             clearCache();
+            seqAnnotation = result;
             cacheSequences(seqAnnotation);
 
             initStepTwoPanel();
