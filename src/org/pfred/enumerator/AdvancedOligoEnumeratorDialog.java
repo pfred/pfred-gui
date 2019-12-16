@@ -578,7 +578,7 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
         String finalResults = "";
         String seqs = "";
         boolean cancelled = false;
-        int retries = 30;
+        int retries = 100;
 
         public Object construct() {
             String primaryTranscriptID = getPrimaryTranscriptID();
@@ -592,14 +592,18 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
 
             try {
                 String[] results = null;
+                String aux = "";
                 cancelled = false;
                 startProgress("   Enumerate and annotate oligos --- may take 30 to 60 minutes   ");
 
-                while (results == null && retries > 0){
+                while ((results == null || aux.isEmpty() || aux == null) && retries > 0){
                     results = RestServiceClient.runEnumerateUtilitiesService("enumerate", runName, secondaryTranscriptIDs,
                                                                                 primaryTranscriptID, "" + oligo_len);
-                    if(results == null){
-                        System.out.println("Connection refused, retrying..." + retries);
+                    aux = results[0];
+                    System.out.println("OUCH");
+                    System.out.println(aux);
+                    if(results == null || aux.isEmpty() || aux == null){
+                        System.out.println("Received null results from server, retrying..." + retries);
                         retries = retries - 1;
                     }
                 }
@@ -646,7 +650,7 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                             finalResults = RestServiceClient.runOffTargetSearchService("ASO", species, runName, ids, "" + getMissMatches());
                             System.out.println("------");
                             if (finalResults.isEmpty()){
-                                System.out.println("Connection refused, retrying..." + retries);
+                                System.out.println("Received empty string from server, retrying..." + retries);
                                 retries = retries - 1;
                             }
                         }
@@ -654,13 +658,14 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                             cancelled = true;
                             System.out.println("Maximum connection retries exceeded");
                         }
-                        System.out.println(finalResults);
+                        // System.out.println(finalResults);
+                        System.out.println("DONE");
                     } else {
                         while (finalResults.isEmpty() && retries > 0){
                             finalResults = RestServiceClient.runOffTargetSearchService("siRNA", species, runName, ids, "" + getMissMatches());
                             System.out.println("------");
                             if (finalResults.isEmpty()){
-                                System.out.println("Connection refused, retrying..." + retries);
+                                System.out.println("Received empty string from server, retrying..." + retries);
                                 retries = retries - 1;
                             }
                         }
@@ -687,11 +692,13 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                     if (isAntiSenseDesign()) {
                         finalResults = RestServiceClient.runActivityModelService("ASO", runName, primarySeq, "" + oligo_len);
                         System.out.println("------");
-                        System.out.println(finalResults);
+                        System.out.println("DONE");
+                        // System.out.println(finalResults);
                     } else {
                         finalResults = RestServiceClient.runActivityModelService("siRNA", runName, primarySeq, null);
                         System.out.println("------");
-                        System.out.println(finalResults);
+                        System.out.println("DONE");
+                        // System.out.println(finalResults);
                     }
                     serverRunDirExist = true;
                 } catch (Exception e) {

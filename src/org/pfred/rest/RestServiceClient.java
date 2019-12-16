@@ -17,6 +17,8 @@ public class RestServiceClient {
     private static String endpoint = "https://os.biogen.com";
     private static String service;
     private static String uri;
+    private static String fileuri;
+    private static int ntries = 50;
 
     public static URI appendUri(String uri, String appendQuery) throws URISyntaxException {
         URI oldUri = new URI(uri);
@@ -53,9 +55,10 @@ public class RestServiceClient {
                 newuri = appendUri(newuri.toString(), "OligoLength=" + oligoLength);
             }
 
-            RestServiceResult restResult = RestServiceCaller.get(newuri.toString(), 1000);
+            RestServiceResult restResult = RestServiceCaller.get(newuri.toString(), 2000);
 
             // Get response as string
+            System.out.println("Response Code: " + restResult.getResponseCode());
             return restResult.getResultString();
 
         } catch (URISyntaxException e){
@@ -76,16 +79,72 @@ public class RestServiceClient {
             uri = endpoint + "/" + "PFREDRestService/service" + "/" +
                 service + "/" + pathValue;
 
+            // Hardcoded
+
+            fileuri = endpoint + "/" + "PFREDRestService/service" + "/" +
+                service + "/" + "Check";
+
             URI newuri = new URI(uri);
+            URI newfileuri = new URI(fileuri);
 
             newuri = appendUri(uri, "RunDirectory=" + runDir);
             newuri = appendUri(newuri.toString(), "Species=" + species);
             newuri = appendUri(newuri.toString(), "IDs=" + IDs);
             newuri = appendUri(newuri.toString(), "missMatches=" + missMatches);
 
-            RestServiceResult restResult = RestServiceCaller.get(newuri.toString(), 1000);
+            RestServiceResult restResult = RestServiceCaller.get(newuri.toString(), 2000);
+            RestServiceResult restCheckFile;
+            String pacoResult = null;
 
             // Get response as string
+            System.out.println("Response Code: " + restResult.getResponseCode());
+
+            // If 504, let's cheat... send empty species, REST will understand this as just ask for
+            // results
+
+            if (restResult.getResponseCode() == 504){
+                System.out.println("Got code 504, let us wait and try to get the results...");
+
+                newfileuri = appendUri(fileuri, "File=paco.txt");
+                newfileuri = appendUri(newfileuri.toString(), "RunDirectory=" + runDir);
+
+                newuri = appendUri(uri, "RunDirectory=" + runDir);
+                newuri = appendUri(newuri.toString(), "Species=paco");
+                newuri = appendUri(newuri.toString(), "IDs=" + IDs);
+                newuri = appendUri(newuri.toString(), "missMatches=" + missMatches);
+
+                restCheckFile = RestServiceCaller.get(newfileuri.toString(), 2000);
+                pacoResult = restCheckFile.getResultString();
+
+                while (pacoResult == null){
+
+                    System.out.println("From paco.txt got " + pacoResult);
+
+                    // Wait 50 seconds
+                    try {
+                        System.out.println("Sleeping...");
+                        Thread.sleep(50000);
+                        System.out.println("Woke Up!...");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    restCheckFile = RestServiceCaller.get(newfileuri.toString(), 2000);
+                    pacoResult = restCheckFile.getResultString();
+                }
+                System.out.println("Found Nonempty paco.txt, ready to collect result from OffTarget");
+                restResult = RestServiceCaller.get(newuri.toString(), 2000);
+            }else{
+                while (restResult.getResponseCode() != 200 && ntries > 0){
+                    System.out.println("Retrying..." + ntries);
+                    restResult = RestServiceCaller.get(newuri.toString(), 2000);
+                    System.out.println("Response Code: " + restResult.getResponseCode());
+                    ntries = ntries - 1;
+                }
+                if(restResult.getResponseCode() != 200){
+                    System.out.println("Call failed, max tries exceeded, aborting...");
+                    return null;
+                }
+            }
             return restResult.getResultString();
 
         } catch (URISyntaxException e){
@@ -120,6 +179,7 @@ public class RestServiceClient {
             RestServiceResult restResult = RestServiceCaller.get(newuri.toString(), 1000);
 
             // Get response as string
+            System.out.println("Response Code: " + restResult.getResponseCode());
             return restResult.getResultString();
 
         } catch (URISyntaxException e){
@@ -149,6 +209,7 @@ public class RestServiceClient {
             RestServiceResult restResult = RestServiceCaller.get(newuri.toString(), 1000);
 
             // Get response as string
+            System.out.println("Response Code: " + restResult.getResponseCode());
             return restResult.getResultString();
 
         } catch (URISyntaxException e){
@@ -192,6 +253,7 @@ public class RestServiceClient {
             restResult = RestServiceCaller.get(newuri.toString(), 1000);
 
             // Get second string from enumerate_second
+            System.out.println("Response Code: " + restResult.getResponseCode());
             results[1] = restResult.getResultString();
 
             return results;
