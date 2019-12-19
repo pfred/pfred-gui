@@ -15,6 +15,7 @@ import org.pfred.SSL.SSLFix;
 
 public class RestServiceClient {
     private static String endpoint = "https://os.biogen.com";
+    private static String protocol = "https";
     private static String service;
     private static String uri;
     private static String fileuri;
@@ -39,8 +40,13 @@ public class RestServiceClient {
     public static String runActivityModelService(String pathValue, final String runDir,
                                                  final String PrimarySeq, final String oligoLength){
         try {
-            SSLFix.execute();
-            RestServiceCaller.setHttpsEnabled(true);
+            if(protocol == "https"){
+                SSLFix.execute();
+                RestServiceCaller.setHttpsEnabled(true);
+            }
+            else{
+                RestServiceCaller.setHttpsEnabled(false);
+            }
             service = "ActivityModel";
 
             uri = endpoint + "/" + "PFREDRestService/service" + "/" +
@@ -70,10 +76,15 @@ public class RestServiceClient {
     }
 
     public static String runOffTargetSearchService(String pathValue, final String species, final String runDir,
-                                                 final String IDs, final String missMatches){
+                                                   final String IDs, final String missMatches){
         try {
-            SSLFix.execute();
-            RestServiceCaller.setHttpsEnabled(true);
+            if(protocol == "https"){
+                SSLFix.execute();
+                RestServiceCaller.setHttpsEnabled(true);
+            }
+            else{
+                RestServiceCaller.setHttpsEnabled(false);
+            }
             service = "OffTargetSearch";
 
             uri = endpoint + "/" + "PFREDRestService/service" + "/" +
@@ -145,6 +156,7 @@ public class RestServiceClient {
                     return null;
                 }
             }
+            pacoResult = null;
             return restResult.getResultString();
 
         } catch (URISyntaxException e){
@@ -159,8 +171,13 @@ public class RestServiceClient {
                                                    final String ensemblID, final String requestedSpecies,
                                                    final String species){
         try {
-            SSLFix.execute();
-            RestServiceCaller.setHttpsEnabled(true);
+            if(protocol == "https"){
+                SSLFix.execute();
+                RestServiceCaller.setHttpsEnabled(true);
+            }
+            else{
+                RestServiceCaller.setHttpsEnabled(false);
+            }
             service = "ScriptUtilities";
 
             uri = endpoint + "/" + "PFREDRestService/service" + "/" +
@@ -190,11 +207,17 @@ public class RestServiceClient {
         return null;
     }
 
-    public static String runAddToFileUtilityService(final String runDir, final String file, final String text){
+    public static String runAddToFileUtilityService(final String runDir, final String file,
+                                                    final String text){
         String pathValue = "appendToFile";
         try {
-            SSLFix.execute();
-            RestServiceCaller.setHttpsEnabled(true);
+            if(protocol == "https"){
+                SSLFix.execute();
+                RestServiceCaller.setHttpsEnabled(true);
+            }
+            else{
+                RestServiceCaller.setHttpsEnabled(false);
+            }
             service = "ScriptUtilities";
 
             uri = endpoint + "/" + "PFREDRestService/service" + "/" +
@@ -221,13 +244,25 @@ public class RestServiceClient {
     }
 
     public static String[] runEnumerateUtilitiesService(String pathValue, final String runDir,
-                                                      final String secondaryIDs, final String primaryID,
-                                                      final String oligoLen){
+                                                        final String secondaryIDs, final String primaryID,
+                                                        final String oligoLen){
         String[] results = new String[2];
         try {
-            SSLFix.execute();
-            RestServiceCaller.setHttpsEnabled(true);
+            if(protocol == "https"){
+                SSLFix.execute();
+                RestServiceCaller.setHttpsEnabled(true);
+            }
+            else{
+                RestServiceCaller.setHttpsEnabled(false);
+            }
             service = "ScriptUtilities";
+
+            // Hardcoded
+
+            fileuri = endpoint + "/" + "PFREDRestService/service" + "/" +
+                "OffTargetSearch" + "/" + "Check";
+
+            URI newfileuri = new URI(fileuri);
 
             uri = endpoint + "/" + "PFREDRestService/service" + "/" +
                 service + "/" + pathValue + "_first";
@@ -240,10 +275,50 @@ public class RestServiceClient {
             newuri = appendUri(newuri.toString(), "oligoLen=" + oligoLen);
 
 
-            RestServiceResult restResult = RestServiceCaller.get(newuri.toString(), 1000);
+            RestServiceResult restResult = RestServiceCaller.get(newuri.toString(), 2000);
+            RestServiceResult restCheckFile;
+            String pacoResult = null;
+
+            // Get response as string
+            System.out.println("Response Code: " + restResult.getResponseCode());
+
+            // If 504, let's cheat... send empty species, REST will understand this as just ask for
+            // results
+
+            if (restResult.getResponseCode() == 504){
+                System.out.println("Got code 504, let us wait and try to get the results...");
+
+                newfileuri = appendUri(fileuri, "File=paco.txt");
+                newfileuri = appendUri(newfileuri.toString(), "RunDirectory=" + runDir);
+
+                restCheckFile = RestServiceCaller.get(newfileuri.toString(), 2000);
+                pacoResult = restCheckFile.getResultString();
+
+                while (pacoResult == null){
+
+                    System.out.println("From paco.txt got " + pacoResult);
+
+                    // Wait 50 seconds
+                    try {
+                        System.out.println("Sleeping...");
+                        Thread.sleep(50000);
+                        System.out.println("Woke Up!...");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    restCheckFile = RestServiceCaller.get(newfileuri.toString(), 2000);
+                    pacoResult = restCheckFile.getResultString();
+                }
+                System.out.println("Found Nonempty paco.txt, ready to collect result from Enumeration");
+                newuri = appendUri(fileuri, "File=EnumerationResult.csv");
+                newuri = appendUri(newuri.toString(), "RunDirectory=" + runDir);
+                restResult = RestServiceCaller.get(newuri.toString(), 2000);
+                System.out.println("Response Code: " + restResult.getResponseCode());
+            }
+
+            results[0] = restResult.getResultString();
 
             // Get first string from enumerate_first
-            results[0] = restResult.getResultString();
 
             uri = endpoint + "/" + "PFREDRestService/service" + "/" +
                 service + "/" + pathValue + "_second";
@@ -272,5 +347,10 @@ public class RestServiceClient {
 
     public static void setEndPoint(String newendpoint){
         endpoint = newendpoint;
+        int iend = endpoint.indexOf(":");
+        if (iend != -1) {
+            protocol = endpoint.substring(0 , iend);
+            System.out.println("Used Protocol: " + protocol);
+        }
     }
 }
