@@ -600,9 +600,9 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
                     results = RestServiceClient.runEnumerateUtilitiesService("enumerate", runName, secondaryTranscriptIDs,
                                                                                 primaryTranscriptID, "" + oligo_len);
                     aux = results[0];
-                    System.out.println("OUCH");
-                    System.out.println(aux);
+                    // System.out.println(aux);
                     if(results == null || aux.isEmpty() || aux == null){
+                        System.out.println("OUCH");
                         System.out.println("Received null results from server, retrying..." + retries);
                         retries = retries - 1;
                     }
@@ -688,14 +688,15 @@ public class AdvancedOligoEnumeratorDialog extends JDialog implements ActionList
             if (jcb_runEfficacyModel.isSelected()) {
                 try {
                     startProgress("   Running activity model  ");
-                    String primarySeq = getPrimaryTranscriptSeq();
+                    // String primarySeq = getPrimaryTranscriptSeq();
+                    String primaryID = getPrimaryTranscriptID();
                     if (isAntiSenseDesign()) {
-                        finalResults = RestServiceClient.runActivityModelService("ASO", runName, primarySeq, "" + oligo_len);
+                        finalResults = RestServiceClient.runActivityModelService("ASO", runName, primaryID, "" + oligo_len);
                         System.out.println("------");
                         System.out.println("DONE");
                         // System.out.println(finalResults);
                     } else {
-                        finalResults = RestServiceClient.runActivityModelService("siRNA", runName, primarySeq, null);
+                        finalResults = RestServiceClient.runActivityModelService("siRNA", runName, primaryID, null);
                         System.out.println("------");
                         System.out.println("DONE");
                         // System.out.println(finalResults);

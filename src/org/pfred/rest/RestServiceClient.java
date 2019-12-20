@@ -38,7 +38,7 @@ public class RestServiceClient {
     }
 
     public static String runActivityModelService(String pathValue, final String runDir,
-                                                 final String PrimarySeq, final String oligoLength){
+                                                 final String PrimaryID, final String oligoLength){
         try {
             if(protocol == "https"){
                 SSLFix.execute();
@@ -55,13 +55,13 @@ public class RestServiceClient {
             URI newuri = new URI(uri);
 
             newuri = appendUri(uri, "RunDirectory=" + runDir);
-            newuri = appendUri(newuri.toString(), "PrimarySequence=" + PrimarySeq);
+            newuri = appendUri(newuri.toString(), "PrimaryID=" + PrimaryID);
 
             if(pathValue == "ASO"){
                 newuri = appendUri(newuri.toString(), "OligoLength=" + oligoLength);
             }
 
-            RestServiceResult restResult = RestServiceCaller.get(newuri.toString(), 2000);
+            RestServiceResult restResult = RestServiceCaller.post(newuri.toString(), null, 2000);
 
             // Get response as string
             System.out.println("Response Code: " + restResult.getResponseCode());

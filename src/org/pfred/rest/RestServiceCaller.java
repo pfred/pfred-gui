@@ -52,11 +52,14 @@ public class RestServiceCaller {
         connection.setDoOutput(true);
         connection.setConnectTimeout((int) (timeout * 1000));
         connection.setReadTimeout((int) (timeout * 1000));
-        OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
 
-        // Start the POST operation...
-        writer.write(postData);
-        writer.close();
+        if (postData != null){
+            OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+
+            // Start the POST operation...
+            writer.write(postData);
+            writer.close();
+        }
         int respCode = connection.getResponseCode();
 
         // Test result of POST and set output stream...
