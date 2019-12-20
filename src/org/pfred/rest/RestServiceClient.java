@@ -41,7 +41,7 @@ public class RestServiceClient {
                                                  final String PrimaryID, final String oligoLength){
         try {
             String outfile = "siRNAActivityModelResult.csv";
-            int max = 2;
+            int max = 4;
 
             if(protocol == "https"){
                 SSLFix.execute();
