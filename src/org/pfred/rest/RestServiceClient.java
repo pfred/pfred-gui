@@ -40,6 +40,9 @@ public class RestServiceClient {
     public static String runActivityModelService(String pathValue, final String runDir,
                                                  final String PrimaryID, final String oligoLength){
         try {
+            String outfile = "siRNAActivityModelResult.csv";
+            int max = 2;
+
             if(protocol == "https"){
                 SSLFix.execute();
                 RestServiceCaller.setHttpsEnabled(true);
@@ -52,19 +55,62 @@ public class RestServiceClient {
             uri = endpoint + "/" + "PFREDRestService/service" + "/" +
                 service + "/" + pathValue;
 
+            // Hardcoded
+
+            fileuri = endpoint + "/" + "PFREDRestService/service" + "/" +
+                "OffTargetSearch" + "/" + "Check";
+
             URI newuri = new URI(uri);
+            URI newfileuri = new URI(fileuri);
+            RestServiceResult restCheckFile;
+            String pacoResult = null;
 
             newuri = appendUri(uri, "RunDirectory=" + runDir);
             newuri = appendUri(newuri.toString(), "PrimaryID=" + PrimaryID);
 
             if(pathValue == "ASO"){
                 newuri = appendUri(newuri.toString(), "OligoLength=" + oligoLength);
+                outfile = "ASOActivityModelResult.csv";
             }
 
             RestServiceResult restResult = RestServiceCaller.post(newuri.toString(), null, 2000);
 
             // Get response as string
             System.out.println("Response Code: " + restResult.getResponseCode());
+
+            if (restResult.getResponseCode() == 504){
+                System.out.println("Got code 504, let us wait and try to get the results...");
+
+                newfileuri = appendUri(fileuri, "File=paco.txt");
+                newfileuri = appendUri(newfileuri.toString(), "RunDirectory=" + runDir);
+
+                restCheckFile = RestServiceCaller.get(newfileuri.toString(), 2000);
+                pacoResult = restCheckFile.getResultString();
+
+                while (pacoResult == null && max > 0){
+
+                    System.out.println("From paco.txt got " + pacoResult);
+
+                    // Wait 50 seconds
+                    try {
+                        System.out.println("Sleeping...");
+                        Thread.sleep(120000);
+                        System.out.println("Woke Up!...");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    restCheckFile = RestServiceCaller.get(newfileuri.toString(), 5000);
+                    pacoResult = restCheckFile.getResultString();
+                    System.out.println("Response Code: " + restCheckFile.getResponseCode());
+                    max = max - 1;
+                }
+                System.out.println("Found Nonempty paco.txt, ready to collect result from Activity");
+                newuri = appendUri(fileuri, "File=" + outfile);
+                newuri = appendUri(newuri.toString(), "RunDirectory=" + runDir);
+                restResult = RestServiceCaller.get(newuri.toString(), 2000);
+                System.out.println("Response Code: " + restResult.getResponseCode());
+            }
+
             return restResult.getResultString();
 
         } catch (URISyntaxException e){
