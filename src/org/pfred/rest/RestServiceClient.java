@@ -91,7 +91,7 @@ public class RestServiceClient {
 
                     System.out.println("From paco.txt got " + pacoResult);
 
-                    // Wait 50 seconds
+                    // Wait 120 seconds
                     try {
                         System.out.println("Sleeping...");
                         Thread.sleep(120000);
@@ -107,10 +107,23 @@ public class RestServiceClient {
                 System.out.println("Found Nonempty paco.txt, ready to collect result from Activity");
                 newuri = appendUri(fileuri, "File=" + outfile);
                 newuri = appendUri(newuri.toString(), "RunDirectory=" + runDir);
-                restResult = RestServiceCaller.get(newuri.toString(), 2000);
+                restResult = RestServiceCaller.get(newuri.toString(), 5000);
                 System.out.println("Response Code: " + restResult.getResponseCode());
+                if (restResult.getResponseCode() == 400){
+                    // Wait 120 seconds
+                    try {
+                        System.out.println("Sleeping...");
+                        Thread.sleep(120000);
+                        System.out.println("Woke Up!...");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("Trying again");
+                    restResult = RestServiceCaller.get(newuri.toString(), 5000);
+                    System.out.println("Response Code: " + restResult.getResponseCode());
+                }
             }
-
+            pacoResult = null;
             return restResult.getResultString();
 
         } catch (URISyntaxException e){
@@ -124,6 +137,7 @@ public class RestServiceClient {
     public static String runOffTargetSearchService(String pathValue, final String species, final String runDir,
                                                    final String IDs, final String missMatches){
         try {
+            String outfile = "siRNAOffTargetSearchResult.csv";
             if(protocol == "https"){
                 SSLFix.execute();
                 RestServiceCaller.setHttpsEnabled(true);
@@ -149,6 +163,10 @@ public class RestServiceClient {
             newuri = appendUri(newuri.toString(), "IDs=" + IDs);
             newuri = appendUri(newuri.toString(), "missMatches=" + missMatches);
 
+            if(pathValue == "ASO"){
+                outfile = "ASOOffTargetSearchResult.csv";
+            }
+
             RestServiceResult restResult = RestServiceCaller.get(newuri.toString(), 2000);
             RestServiceResult restCheckFile;
             String pacoResult = null;
@@ -165,10 +183,10 @@ public class RestServiceClient {
                 newfileuri = appendUri(fileuri, "File=paco.txt");
                 newfileuri = appendUri(newfileuri.toString(), "RunDirectory=" + runDir);
 
-                newuri = appendUri(uri, "RunDirectory=" + runDir);
-                newuri = appendUri(newuri.toString(), "Species=paco");
-                newuri = appendUri(newuri.toString(), "IDs=" + IDs);
-                newuri = appendUri(newuri.toString(), "missMatches=" + missMatches);
+                // newuri = appendUri(uri, "RunDirectory=" + runDir);
+                // newuri = appendUri(newuri.toString(), "Species=paco");
+                // newuri = appendUri(newuri.toString(), "IDs=" + IDs);
+                // newuri = appendUri(newuri.toString(), "missMatches=" + missMatches);
 
                 restCheckFile = RestServiceCaller.get(newfileuri.toString(), 2000);
                 pacoResult = restCheckFile.getResultString();
@@ -187,9 +205,13 @@ public class RestServiceClient {
                     }
                     restCheckFile = RestServiceCaller.get(newfileuri.toString(), 2000);
                     pacoResult = restCheckFile.getResultString();
+                    System.out.println("Response Code: " + restCheckFile.getResponseCode());
                 }
                 System.out.println("Found Nonempty paco.txt, ready to collect result from OffTarget");
-                restResult = RestServiceCaller.get(newuri.toString(), 2000);
+                newuri = appendUri(fileuri, "File=" + outfile);
+                newuri = appendUri(newuri.toString(), "RunDirectory=" + runDir);
+                restResult = RestServiceCaller.get(newuri.toString(), 5000);
+                System.out.println("Response Code: " + restResult.getResponseCode());
             }else{
                 while (restResult.getResponseCode() != 200 && ntries > 0){
                     System.out.println("Retrying..." + ntries);
