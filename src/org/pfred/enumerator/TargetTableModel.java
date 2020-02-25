@@ -102,8 +102,18 @@ public class TargetTableModel
                     if (s.toUpperCase().contains("RATTUS_")) {
                         s = "rat";
                     }
+                    if (s.toUpperCase().contains("CANIS_")) {
+                        s = "dog";
+                    }
+                    if (s.toUpperCase().contains("PAN_")) {
+                        s = "chimp";
+                    }
+                    if (s.toUpperCase().contains("MACACA_")) {
+                        s = "macaque";
+                    }
                     //bowtie only works for human
-                    if (s == "human" || s == "mouse" || s == "rat") {
+                    if (s == "human" || s == "mouse" || s == "rat" ||
+                        s == "dog" || s == "chimp" || s == "macaque") {
                         if (species.indexOf(s) < 0) { //new
                             if (species.length() != 0) {
                                 species.append(delim);
@@ -141,7 +151,10 @@ public class TargetTableModel
                     //bowtie only works for human
                     if (t.getSpecies().toUpperCase().contains("HOMO_")
                             || t.getSpecies().toUpperCase().contains("MUS_")
-                            || t.getSpecies().toUpperCase().contains("RATTUS_")) {
+                            || t.getSpecies().toUpperCase().contains("RATTUS_")
+                            || t.getSpecies().toUpperCase().contains("CANIS_")
+                            || t.getSpecies().toUpperCase().contains("PAN_")
+                            || t.getSpecies().toUpperCase().contains("MACACA_")) {
                         if (ids.length() != 0) {
                             ids.append(delim);
                         }
